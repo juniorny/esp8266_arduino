@@ -1,6 +1,6 @@
 #include "hardwareTimer.h"
 
-void ICACHE_RAM_ATTR timer1_isr_handler(void *para);
+void ICACHE_RAM_ATTR handleInterrupt(void *para);
 
 HardwareTimer::HardwareTimer(uint8_t timer_id)
 	:id(timer_id)
@@ -42,23 +42,28 @@ void ICACHE_RAM_ATTR HardwareTimer::write(uint32_t ticks)
 void ICACHE_RAM_ATTR HardwareTimer::isr_init()
 {    
 	if (id == 1)
-		ETS_FRC_TIMER1_INTR_ATTACH(timer1_isr_handler, this);
+		ETS_FRC_TIMER1_INTR_ATTACH(handleInterrupt, this);
 }
 
-void ICACHE_RAM_ATTR timer1_isr_handler(void *para) 
+void ICACHE_RAM_ATTR handleInterrupt(void *para) 
 {   
-	HardwareTimer *t1 = (HardwareTimer *)para;
-	if ((T1C & ((1 << TCAR) | (1 << TCIT))) == 0) 
-		TEIE &= ~TEIE1;//edge int disable    
-	T1I = 0;    
-	if (t1->user_cb) 
+	HardwareTimer *timer = (HardwareTimer *)para;
+	if (timer->id == 1)
+	{
+		if ((T1C & ((1 << TCAR) | (1 << TCIT))) == 0) 
+			TEIE &= ~TEIE1;//edge int disable    
+		T1I = 0; 
+	}
+	
+	if (timer->user_cb) 
 	{		
 		// to make ISR compatible to Arduino AVR model where interrupts are disabled		
 		// we disable them before we call the client ISR		
 		uint32_t savedPS = xt_rsil(15); // stop other interrupts		
-		t1->user_cb();		 
+		timer->user_cb();		 
 		xt_wsr_ps(savedPS);	
 	}
+
 
 }
 
