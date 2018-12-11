@@ -1,0 +1,15 @@
+HardwareTimer	KEYWORD1
+Timer0	KEYWORD1
+Timer1	KEYWORD1
+Timer2	KEYWORD1
+
+pause	KEYWORD2
+resume	KEYWORD2
+shutdown	KEYWORD2
+getPrescaleFactor	KEYWORD2
+setPrescaleFactor	KEYWORD2
+getOverflow	KEYWORD2
+setOverflow	KEYWORD2
+setPeriod	KEYWORD2
+attachInterrupt	KEYWORD2
+detachInterrupt	KEYWORD2
